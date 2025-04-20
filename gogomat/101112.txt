@@ -1,0 +1,122 @@
+#10
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the image
+image = cv2.imread('OIP.jpg', 0)
+
+# Define the Laplacian kernel for sharpening
+laplacian_kernel = np.array([[0, -1, 0], 
+                             [-1, 4, -1], 
+                             [0, -1, 0]])
+
+# Apply the Laplacian filter
+laplacian_filtered = cv2.filter2D(image, -1, laplacian_kernel)
+
+# Sharpen the image by subtracting the Laplacian result from the original image
+sharpened_image = image - laplacian_filtered
+
+# Display the original and sharpened images using subplots
+plt.subplot(1, 2, 1)
+plt.imshow(image, cmap='gray')
+plt.title("Original Image")
+plt.axis('off')
+
+plt.subplot(1, 2, 2)
+plt.imshow(sharpened_image, cmap='gray')
+plt.title("Sharpened Image")
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
+
+
+
+#11
+#11
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+image = cv2.imread("OIP.jpg", 0)
+
+
+kernel = np.ones((5, 5), np.uint8)
+
+erosion = cv2.erode(image, kernel)
+dilation = cv2.dilate(image, kernel)
+opening = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+closing = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
+
+
+fig, axes = plt.subplots(3, 2, figsize=(10, 10))
+
+
+
+# Original Image
+axes[0, 0].imshow(image, cmap='gray')
+axes[0, 0].set_title("Original")
+axes[0, 0].axis('off')
+
+# Erosion
+axes[0, 1].imshow(erosion, cmap='gray')
+axes[0, 1].set_title("Erosion")
+axes[0, 1].axis('off')
+
+# Dilation
+axes[1, 0].imshow(dilation, cmap='gray')
+axes[1, 0].set_title("Dilation")
+axes[1, 0].axis('off')
+
+# Opening
+axes[1, 1].imshow(opening, cmap='gray')
+axes[1, 1].set_title("Opening")
+axes[1, 1].axis('off')
+
+# Closing
+axes[2, 0].imshow(closing, cmap='gray')
+axes[2, 0].set_title("Closing")
+axes[2, 0].axis('off')
+
+# Remove the last empty subplot (axes[2, 1])
+fig.delaxes(axes[2, 1])
+
+plt.tight_layout()
+plt.show()
+
+
+
+
+#12
+
+#12
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load grayscale image
+image = cv2.imread('OIP.jpg', 0)
+
+# Manual thresholding
+threshold = 127
+segmented = np.zeros_like(image)
+segmented[image > threshold] = 255  # foreground
+segmented[image <= threshold] = 0   # background
+
+# Create subplot manually
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+
+axes[0].imshow(image, cmap='gray')
+axes[0].set_title("Original")
+axes[0].axis('off')
+
+axes[1].imshow(segmented, cmap='gray')
+axes[1].set_title("Segmented")
+axes[1].axis('off')
+
+plt.tight_layout()
+plt.show()

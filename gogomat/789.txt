@@ -1,0 +1,195 @@
+#7
+#7
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the image in grayscale
+image = cv2.imread('OIP.jpg', cv2.IMREAD_GRAYSCALE)
+
+
+# Apply Low-Pass Filtering (Median Filter)
+median_filtered = cv2.medianBlur(image, 5)  # Kernel size 5
+
+# Apply High-Pass Filtering (Laplacian)
+
+laplacian_kernel = np.array([[0, -1, 0], [-1, 4, -1], [0, -1, 0]])  
+laplacian_filtered = cv2.filter2D(image, -1, laplacian_kernel)  # 
+
+# Create figure and axes
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+# Display Original Image
+axes[0].imshow(image, cmap='gray')
+axes[0].set_title("Original Image")
+axes[0].axis('off')
+
+# Display Mean Filtered Image
+
+# Display Median Filtered Image
+axes[1].imshow(median_filtered, cmap='gray')
+axes[1].set_title("Median Filter (LPF)")
+axes[1].axis('off')
+
+# Display High-Pass Filtered Image
+axes[2].imshow(laplacian_filtered, cmap='gray')
+axes[2].set_title("Laplacian (HPF)")
+axes[2].axis('off')
+
+# Adjust layout and show
+plt.tight_layout()
+plt.show()
+
+
+
+#8
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+def add_salt_pepper_noise(image, salt_prob=0.3, pepper_prob=0.2):
+    noisy_img = np.copy(image)
+    total_pixels = image.size
+    
+    num_salt = int(salt_prob * total_pixels)
+    rows = np.random.randint(0, image.shape[0], num_salt)  # Select row indices
+    cols = np.random.randint(0, image.shape[1], num_salt)  # Select column indices
+
+    noisy_img[rows, cols] = 255  # Set salt noise pixels to white
+    
+    
+    num_pepper = int(pepper_prob * total_pixels)
+    pepper_coords = [np.random.randint(0, i, num_pepper) for i in image.shape]   #same as above , u can do either
+    noisy_img[pepper_coords[0], pepper_coords[1]] = 0  
+    
+    return noisy_img
+
+# def median_filter(img, kernel_size=3):
+#     h, w = img.shape
+#     pad = kernel_size // 2
+#     filtered_img = np.zeros_like(img)
+    
+#     padded_img = np.pad(img, pad, mode='constant', constant_values=0)
+
+#     for i in range(h):
+#         for j in range(w):
+#             region = padded_img[i:i+kernel_size, j:j+kernel_size]
+#             filtered_img[i, j] = np.median(region)
+
+#     return filtered_img
+image = cv2.imread('colorful.jpg')
+img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+noisy_img = add_salt_pepper_noise(img)
+median_filtered = cv2.medianBlur(noisy_img, 3)  
+
+
+
+
+fig, axes = plt.subplots(1, 3, figsize=(12, 6))  # Create 1 row, 4 columns
+
+# Original Image
+axes[0].imshow(img, cmap='gray')
+axes[0].set_title("Original Image")
+axes[0].axis("off")
+
+# Salt & Pepper Noise
+axes[1].imshow(noisy_img, cmap='gray')
+axes[1].set_title("Salt & Pepper Noise")
+axes[1].axis("off")
+
+# Median Filtered Image
+axes[2].imshow(median_filtered, cmap='gray')
+axes[2].set_title("Median Filter (Preserves Edges)")
+axes[2].axis("off")
+
+# Mean Filtered Image
+
+
+# Adjust layout and show
+plt.tight_layout()
+plt.show()
+
+
+#9
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+img = cv2.imread("C:/Users/ARSHAN/Desktop/5th/codes/trials/s.png", cv2.IMREAD_GRAYSCALE)
+if img is None:
+    raise FileNotFoundError("Image not found! Check the file path.")
+
+sobel_x_kernel = np.array([[-1, 0, 1], 
+                           [-2, 0, 2], 
+                           [-1, 0, 1]])  
+
+sobel_y_kernel = np.array([[-1, -2, -1], 
+                           [0, 0, 0], 
+                           [1, 2, 1]]) 
+
+
+sobel_x = cv2.filter2D(img, -1, sobel_x_kernel)
+sobel_y = cv2.filter2D(img, -1, sobel_y_kernel)
+
+
+sobel_mag = cv2.magnitude(sobel_x.astype(float), sobel_y.astype(float))
+
+
+#previtt
+
+prewitt_x_kernel = np.array([[-1, 0, 1], 
+                             [-1, 0, 1], 
+                             [-1, 0, 1]])  # X-direction
+
+prewitt_y_kernel = np.array([[-1, -1, -1], 
+                             [0, 0, 0], 
+                             [1, 1, 1]])  # Y-direction
+
+# Convolution
+prewitt_x = cv2.filter2D(img, -1, prewitt_x_kernel)
+prewitt_y = cv2.filter2D(img, -1, prewitt_y_kernel)
+
+# Compute magnitude
+prewitt_mag = cv2.magnitude(prewitt_x.astype(float), prewitt_y.astype(float))
+
+# ========================== 3️⃣ Roberts Filter ==========================
+roberts_x_kernel = np.array([[1, 0], 
+                             [0, -1]])  # X-direction
+
+roberts_y_kernel = np.array([[0, 1], 
+                             [-1, 0]])  # Y-direction
+
+roberts_x = cv2.filter2D(img, -1, roberts_x_kernel)
+roberts_y = cv2.filter2D(img, -1, roberts_y_kernel)
+
+roberts_mag = cv2.magnitude(roberts_x.astype(float), roberts_y.astype(float))
+
+# ========================== 4️⃣ Laplacian Filter ==========================
+laplacian_kernel = np.array([[0, -1, 0], 
+                             [-1, 4, -1], 
+                             [0, -1, 0]])  # 3×3 Laplacian Kernel
+
+laplacian = cv2.filter2D(img, -1, laplacian_kernel)
+
+# ========================== 🔹 Display Results ==========================
+# Create Subplots
+fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+
+# Titles for each subplot
+titles = ['Original', 'Sobel', 'Prewitt', 'Roberts', 'Laplacian']
+images = [img, sobel_mag, prewitt_mag, roberts_mag, laplacian]
+
+# Display images in the subplots
+for i in range(5):
+    axes[i // 3, i % 3].imshow(images[i], cmap='gray')
+    axes[i // 3, i % 3].set_title(titles[i])
+    axes[i // 3, i % 3].axis("off")
+
+# Remove empty subplot space
+axes[1, 2].axis("off")
+
+plt.tight_layout()
+plt.show()

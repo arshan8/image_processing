@@ -1,0 +1,110 @@
+#13
+
+import matplotlib.pyplot as plt
+import cv2
+
+# Load the image
+image = cv2.imread("OIP.jpg")
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB for Matplotlib
+
+# Create a figure and axis
+fig, ax = plt.subplots()
+ax.imshow(image)
+ax.axis("off")  # Hide axes
+
+# Add watermark text
+ax.text(50, 50, "Watermark", fontsize=20, color="white", alpha=0.7, fontweight="bold")
+
+# Save or display the image
+plt.savefig("watermarked.jpg", bbox_inches="tight", dpi=300)
+plt.show()
+
+
+
+
+
+#14
+import cv2
+import matplotlib.pyplot as plt
+
+# Load noisy image (grayscale)
+image = cv2.imread('OIP.jpg', 0)
+
+# Apply Gaussian Blur to reduce noise
+restored = cv2.GaussianBlur(image, (5, 5), 0)
+#restored = cv2.medianBlur(img, 3)  # Kernel size must be od, can use median blur also
+
+# Display original and restored images using manual subplots
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+
+axes[0].imshow(image, cmap='gray')
+axes[0].set_title("Noisy Image")
+axes[0].axis('off')
+
+axes[1].imshow(restored, cmap='gray')
+axes[1].set_title("Restored Image")
+axes[1].axis('off')
+
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+#15
+#15
+"""Block Truncation Coding (BTC) is a simple image compression method that divides an image into non-overlapping blocks (e.g., 4x4 pixels). For each block:
+
+Compute the mean pixel value of the block.
+
+Divide the block into two parts:
+
+High values: Pixels greater than or equal to the block's mean.
+
+Low values: Pixels smaller than the mean.
+
+Replace the high-value pixels with the mean of high values and the low-value pixels with the mean of low values.
+
+This method reduces the amount of data by simplifying the pixel values within each block, but it's lossy (some image details are lost during compression).
+
+BTC is simple and computationally light, but it’s less efficient compared to advanced methods like JPEG.
+
+
+
+"""
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load grayscale image
+img = cv2.imread("OIP.jpg", 0)
+
+# Compressed image (same size)
+compressed = np.zeros_like(img)
+
+# Block size
+bs = 4
+
+# Loop through blocks
+for i in range(0, img.shape[0] - bs, bs):
+    for j in range(0, img.shape[1] - bs, bs):
+        block = img[i:i+bs, j:j+bs]
+        mean = np.mean(block)
+        high = np.mean(block[block >= mean])
+        low = np.mean(block[block < mean])
+        compressed[i:i+bs, j:j+bs] = np.where(block >= mean, high, low)
+
+# Plot using manual subplot axes
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+
+axes[0].imshow(img, cmap='gray')
+axes[0].set_title("Original")
+axes[0].axis("off")
+
+axes[1].imshow(compressed, cmap='gray')
+axes[1].set_title("BTC Compressed")
+axes[1].axis("off")
+
+plt.tight_layout()
+plt.show()

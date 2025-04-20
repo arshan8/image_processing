@@ -1,0 +1,229 @@
+#1
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load image and convert to RGB immediately
+image = cv2.imread("OIP.jpg")
+rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+# Convert to grayscale
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# Split channels
+b, g, r = cv2.split(image)
+zeros = np.zeros_like(b)
+
+# Create color channel images
+red_img   = cv2.merge([zeros, zeros, r])
+green_img = cv2.merge([zeros, g, zeros])
+blue_img  = cv2.merge([b, zeros, zeros])
+
+# Apply convolution filters
+kernel_2d = np.array([[1, 1, 1],
+                      [1, -8, 1],
+                      [1, 1, 1]])
+conv2d = cv2.filter2D(gray, -1, kernel_2d)
+
+kernel_1d = np.array([1, 0, -1])
+conv1d = cv2.filter2D(gray, -1, kernel_1d)
+
+# Plotting in 3x3 grid
+fig, axes = plt.subplots(3, 3, figsize=(12, 8))
+
+# Original Image
+axes[0, 0].imshow(rgb_image)
+axes[0, 0].set_title('Original Image')
+axes[0, 0].axis('off')
+
+# Grayscale Image
+axes[0, 1].imshow(gray, cmap='gray')
+axes[0, 1].set_title('Grayscale Image')
+axes[0, 1].axis('off')
+
+# Red Channel
+axes[0, 2].imshow(red_img)
+axes[0, 2].set_title('Red Channel')
+axes[0, 2].axis('off')
+
+# Green Channel
+axes[1, 0].imshow(green_img)
+axes[1, 0].set_title('Green Channel')
+axes[1, 0].axis('off')
+
+# Blue Channel
+axes[1, 1].imshow(blue_img)
+axes[1, 1].set_title('Blue Channel')
+axes[1, 1].axis('off')
+
+# 2D Convolution
+axes[1, 2].imshow(conv2d, cmap='gray')
+axes[1, 2].set_title('2D Convolution')
+axes[1, 2].axis('off')
+
+# 1D Convolution
+axes[2, 0].imshow(conv1d, cmap='gray')
+axes[2, 0].set_title('1D Convolution')
+axes[2, 0].axis('off')
+
+# Leave the last two plots empty
+axes[2, 1].axis('off')
+axes[2, 2].axis('off')
+
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+#2
+#2
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load images and convert to RGB
+img1 = cv2.imread('OIP.JPG')
+img2 = cv2.imread('colorful.JPG')
+
+# Convert to RGB right after reading
+img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
+img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
+
+# Resize images to the same size
+height, width = min(img1.shape[0], img2.shape[0]), min(img1.shape[1], img2.shape[1])
+img1 = cv2.resize(img1, (width, height))
+img2 = cv2.resize(img2, (width, height))
+
+# Perform arithmetic and logical operations
+add = cv2.add(img1, img2)
+subtract = cv2.subtract(img1, img2)
+multiply = cv2.multiply(img1, img2)
+divide = cv2.divide(img1, img2)
+
+bitwise_and = cv2.bitwise_and(img1, img2)
+bitwise_or = cv2.bitwise_or(img1, img2)
+bitwise_xor = cv2.bitwise_xor(img1, img2)
+bitwise_not_img1 = cv2.bitwise_not(img1)
+bitwise_not_img2 = cv2.bitwise_not(img2)
+
+# Titles and corresponding images
+
+# Create a 3x3 subplot
+fig, axes = plt.subplots(3, 3, figsize=(12, 12))
+
+# Display each image in the subplots manually
+axes[0, 0].imshow(add)
+axes[0, 0].set_title('Addition')
+axes[0, 0].axis('off')
+
+axes[0, 1].imshow(subtract)
+axes[0, 1].set_title('Subtraction')
+axes[0, 1].axis('off')
+
+axes[0, 2].imshow(multiply)
+axes[0, 2].set_title('Multiplication')
+axes[0, 2].axis('off')
+
+axes[1, 0].imshow(divide)
+axes[1, 0].set_title('Division')
+axes[1, 0].axis('off')
+
+axes[1, 1].imshow(bitwise_and)
+axes[1, 1].set_title('Bitwise AND')
+axes[1, 1].axis('off')
+
+axes[1, 2].imshow(bitwise_or)
+axes[1, 2].set_title('Bitwise OR')
+axes[1, 2].axis('off')
+
+axes[2, 0].imshow(bitwise_xor)
+axes[2, 0].set_title('Bitwise XOR')
+axes[2, 0].axis('off')
+
+axes[2, 1].imshow(bitwise_not_img1)
+axes[2, 1].set_title('Bitwise NOT (Image 1)')
+axes[2, 1].axis('off')
+
+axes[2, 2].imshow(bitwise_not_img2)
+axes[2, 2].set_title('Bitwise NOT (Image 2)')
+axes[2, 2].axis('off')
+
+# Adjust layout and show the plot
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+#3
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+
+# Load an image in grayscale (feel free to replace with your own image)
+image = cv2.imread('OIP.jpg')  # Default is BGR
+
+# Convert the BGR image to grayscale using cv2.cvtColor
+image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# --- Negative Transformation ---
+negative_transformed = 255 - image
+
+# --- Gamma Transformation ---
+gamma = 3  # Try different values like 0.5, 1, 2, 3
+gamma_transformed = np.array(255 * (image / 255) ** gamma, dtype=np.uint8)
+
+# --- Log Transformation ---
+c = 255 / np.log(1 + np.max(image))  # Normalize constant based on the maximum pixel value
+log_transformed = c * np.log(1 + image + 1e-5)
+
+# --- Contrast Enhancement (Contrast Stretching) ---
+contrast_stretched = cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX)
+
+# --- Thresholding ---
+thresh_value = 127  # Change threshold value as needed
+_, thresholded_image = cv2.threshold(image, thresh_value, 255, cv2.THRESH_BINARY)
+
+# --- Visualizing the Transformations using Matplotlib ---
+fig, axes = plt.subplots(3, 3, figsize=(12, 10))
+
+# Original Image
+axes[0, 0].imshow(image, cmap='gray')
+axes[0, 0].set_title('Original Image')
+axes[0, 0].axis('off')
+
+# Negative Transformation
+axes[0, 1].imshow(negative_transformed, cmap='gray')
+axes[0, 1].set_title('Negative Transformation')
+axes[0, 1].axis('off')
+
+# Gamma Transformation
+axes[0, 2].imshow(gamma_transformed, cmap='gray')
+axes[0, 2].set_title(f'Gamma Transformation (gamma={gamma})')
+axes[0, 2].axis('off')
+
+# Log Transformation
+axes[1, 0].imshow(log_transformed, cmap='gray')
+axes[1, 0].set_title('Log Transformation')
+axes[1, 0].axis('off')
+
+# Contrast Enhancement (Stretching)
+axes[1, 1].imshow(contrast_stretched, cmap='gray')
+axes[1, 1].set_title('Contrast Enhancement (Stretching)')
+axes[1, 1].axis('off')
+
+# Thresholding
+axes[2, 0].imshow(thresholded_image, cmap='gray')
+axes[2, 0].set_title(f'Thresholding (T={thresh_value})')
+axes[2, 0].axis('off')
+
+# Leave the last plots empty
+axes[1, 2].axis('off')
+axes[2, 1].axis('off')
+axes[2, 2].axis('off')
+
+plt.tight_layout()
+plt.show()
